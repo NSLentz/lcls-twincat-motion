@@ -68,6 +68,24 @@ STRUCT
 
     // We give this a state name and it is used to load parameters from the pmps database.
     stPMPS: ST_DbStateParams;
+
+    // Set true on the rising trigger for execution of a state mover.
+    // Used to sequence movement of a individual axes in a multiple state mover.
+    {attribute 'pytmc' := '
+        pv: PLC:bMoveQueued
+        io: i
+        field: DESC True when waiting to execute in sequence for a state mover.
+    '}
+    bMoveQueued: BOOL;
+
+    // Move order. Only used when bMoveQueued is used. States with a 1 will move
+    // before states with a 2. 2 before 3, etc...
+    {attribute 'pytmc' := '
+        pv: PLC:nMoveOrder
+        io: i
+        field: DESC Order of execution within a sequenced state mover.
+    '}
+    nMoveOrder: UINT;
 END_STRUCT
 END_TYPE]]></Declaration>
   </DUT>

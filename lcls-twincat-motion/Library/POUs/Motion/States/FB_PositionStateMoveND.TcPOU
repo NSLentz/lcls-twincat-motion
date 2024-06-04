@@ -50,10 +50,14 @@ VAR
     bMotorCountError: BOOL;
     nLowerBound: DINT;
     nUpperBound: DINT;
+    rtExec: R_TRIG;
+    nNextMove: DINT;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
+rtExec(CLK:=bExecute);
+
 CheckCount();
 IF NOT bMotorCountError THEN
     DoStateMoves();
@@ -123,11 +127,30 @@ END_IF
       <Implementation>
         <ST><![CDATA[
 // Do the individual moves
+IF rtExec.Q THEN
+    FOR nIndex := 1 TO nActiveMotorCount DO
+        astPositionState[nIndex].bMoveQueued := rtExec.Q;
+    END_FOR
+END_IF
+
+FOR nIndex := 1 TO nActiveMotorCount DO
+    IF bError OR bReset OR astMotionStage[nIndex].bBusy OR astMotionStage[nIndex].bDone THEN
+        astPositionState[nIndex].bMoveQueued := FALSE;
+    END_IF
+END_FOR
+
+nNextMove := nActiveMotorCount + 1;
+FOR nIndex := 1 TO nActiveMotorCount DO
+    IF astPositionState[nIndex].bMoveQueued AND astPositionState[nIndex].nMoveOrder < nNextMove THEN
+        nNextMove := astPositionState[nIndex].nMoveOrder;
+    END_IF
+END_FOR
+
 FOR nIndex := 1 TO nActiveMotorCount DO
     afbPositionStateMove[nIndex](
         stMotionStage:=astMotionStage[nIndex],
         stPositionState:=astPositionState[nIndex],
-        bExecute:=bExecute,
+        bExecute:=astPositionState[nIndex].bMoveQueued AND astPositionState[nIndex].nMoveOrder = nNextMove,
         bReset:=bReset,
         enumMotionRequest:=enumMotionRequest,
     );
