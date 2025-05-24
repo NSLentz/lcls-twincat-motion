@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I_MotionAxisContinuous" Id="{9476e776-665e-453e-b113-3e0936768038}">
+    <Declaration><![CDATA[INTERFACE I_MotionAxisContinuous
+]]></Declaration>
+    <Method Name="MoveContinuous" Id="{b696eb2b-846c-4773-aec4-06e3ed4d56f2}">
+      <Declaration><![CDATA[
+METHOD MoveContinuous
+VAR_INPUT
+    Position	: LREAL;
+    Velocity	: LREAL;
+    Acceleration	: LREAL := 0.0;
+    Deceleration	: LREAL := 0.0;
+    Jerk	: LREAL := 0.0;
+    BufferMode	: MC_BufferMode := .MC_BufferMode.MC_Aborting;
+END_VAR
+VAR_OUTPUT
+    InVelocity	: BOOL;
+    Busy	: BOOL;
+    Active	: BOOL;
+    CommandAborted	: BOOL;
+    Error	: BOOL;
+    ErrorID	: UDINT;
+    ErrorStr	: T_MaxString;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="MoveContinuousBusy" Id="{99373bb0-4c47-434a-8ce1-627213de2e63}">
+      <Declaration><![CDATA[PROPERTY MoveContinuousBusy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{eee6f878-9445-40c6-b2b3-4295ace10728}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="MoveContinuousError" Id="{ffedd637-58da-470b-bb0a-c4ae7c578290}">
+      <Declaration><![CDATA[PROPERTY MoveContinuousError : BOOL]]></Declaration>
+      <Get Name="Get" Id="{2a141798-1efe-48d6-b310-6365edf3982c}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="MoveContinuousErrorID" Id="{d785703c-8cf6-4e72-95fe-eec1a8deb29e}">
+      <Declaration><![CDATA[PROPERTY MoveContinuousErrorID : UDINT]]></Declaration>
+      <Get Name="Get" Id="{424c0687-5ecd-43f3-a318-678bad488a14}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="MoveContinuousInVelocity" Id="{66092af1-db75-4204-a630-5d16e74e05fb}">
+      <Declaration><![CDATA[PROPERTY MoveContinuousInVelocity : BOOL]]></Declaration>
+      <Get Name="Get" Id="{6191e831-8624-44f0-8de7-493ff650818d}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="MoveContinuousPassedTargetPosition" Id="{9b2e0d90-11d1-4cb4-8740-ef840221c736}">
+      <Declaration><![CDATA[PROPERTY MoveContinuousPassedTargetPosition : BOOL]]></Declaration>
+      <Get Name="Get" Id="{9a3b3169-b6df-4247-b68d-c70f792005c7}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+  </Itf>
+</TcPlcObject>

@@ -254,6 +254,9 @@
     <Compile Include="POUs\Motion\FB_MotionAxisNC.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Motion\FB_MotionAxisNCContinuous.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Motion\FB_MotionBacklashCompensation.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -292,6 +295,9 @@
       <LinkAlways>true</LinkAlways>
     </Compile>
     <Compile Include="POUs\Motion\ITFs\I_Brake.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Motion\ITFs\I_MotionAxisContinuous.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Motion\ITFs\I_MotionInterlocks.TcIO">
@@ -580,6 +586,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\FB_MotionAxisNC_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\FB_MotionAxisNCContinuous_Test.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\FB_MotionBPTM_Test.TcPOU">

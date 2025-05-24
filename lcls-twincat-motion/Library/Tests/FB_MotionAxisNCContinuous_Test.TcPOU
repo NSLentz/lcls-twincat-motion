@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_MotionAxisNCContinuous_Test" Id="{d8e383bf-66cb-46ab-8869-4b263901e5f9}" SpecialFunc="None">
+    <Declaration><![CDATA[
+FUNCTION_BLOCK FB_MotionAxisNCContinuous_Test EXTENDS FB_TestSuite
+VAR
+    AxisReference : AXIS_REF;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+GivenLinkedAxisRefExpectSequenceOfOperationsSuccessful();
+]]></ST>
+    </Implementation>
+    <Method Name="GivenLinkedAxisRefExpectSequenceOfOperationsSuccessful" Id="{ddf6b455-dc0e-44ba-8ecc-e8f49e71828e}">
+      <Declaration><![CDATA[
+METHOD PRIVATE GivenLinkedAxisRefExpectSequenceOfOperationsSuccessful
+VAR_INST
+    nTestStep : INT;
+    fbTestTimer : TON := (PT := T#10s);
+
+    fbMotionAxisNCContinuous : FB_MotionAxisNCContinuous(
+        AxisReference := THIS^.AxisReference
+    );
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+TEST(__POUNAME());
+
+fbTestTimer(IN := TRUE);
+
+fbMotionAxisNCContinuous();
+
+CASE nTestStep OF
+    0:
+        fbMotionAxisNCContinuous.Reset();
+
+        nTestStep := nTestStep + 1;
+    1:
+        IF fbMotionAxisNCContinuous.ResetDone THEN
+            AssertFalse(
+                Condition := fbMotionAxisNCContinuous.PowerError,
+                Message := 'Move should not show an error.'
+            );
+            AssertEquals_UDINT(
+                Expected := 0,
+                Actual := fbMotionAxisNCContinuous.PowerErrorID,
+                Message := 'Error ID should be 0.'
+            );
+
+            AssertFalse(
+                Condition := fbMotionAxisNCContinuous.MoveContinuousBusy,
+                Message := 'Move should not show as busy.'
+            );
+            AssertFalse(
+                Condition := fbMotionAxisNCContinuous.MoveContinuousInVelocity,
+                Message := 'Move should not show as done.'
+            );
+            AssertFalse(
+                Condition := fbMotionAxisNCContinuous.MoveContinuousError,
+                Message := 'Move should not show an error.'
+            );
+            AssertEquals_UDINT(
+                Expected := 0,
+                Actual := fbMotionAxisNCContinuous.MoveContinuousErrorID,
+                Message := 'Error ID should be 0.'
+            );
+
+            nTestStep := nTestStep + 1;
+        END_IF
+    2:
+        fbMotionAxisNCContinuous.Power(
+            Enable := TRUE,
+            Enable_Positive := TRUE,
+            Enable_Negative := TRUE,
+            Override := 100.0
+        );
+
+        nTestStep := nTestStep + 1;
+    3:
+        IF fbMotionAxisNCContinuous.PowerIsEnabled AND
+            fbMotionAxisNCContinuous.PositiveMotionIsEnabled AND
+            fbMotionAxisNCContinuous.NegativeMotionIsEnabled THEN
+
+            nTestStep := nTestStep + 1;
+        END_IF
+    4:
+        fbMotionAxisNCContinuous.MoveContinuous(
+            Position := 50.0,
+            Velocity := 25.0,
+            Acceleration := 100.0,
+            Deceleration := 100.0,
+            Jerk := 1000.0,
+            BufferMode := MC_BufferMode.MC_Aborting
+        );
+
+        nTestStep := nTestStep + 1;
+    5:
+         IF fbMotionAxisNCContinuous.MoveContinuousBusy THEN
+            AssertFalse(
+                Condition := fbMotionAxisNCContinuous.MoveContinuousError,
+                Message := 'Move should not show an error.'
+            );
+            AssertEquals_UDINT(
+                Expected := 0,
+                Actual := fbMotionAxisNCContinuous.MoveContinuousErrorID,
+                Message := 'Error ID should be 0.'
+            );
+
+            nTestStep := nTestStep + 1;
+        END_IF
+    6:
+         IF fbMotionAxisNCContinuous.MeasuredPosition >= 25.0 THEN
+            fbMotionAxisNCContinuous.MoveContinuous(
+                Position := -20.0,
+                Velocity := 25.0,
+                Acceleration := 100.0,
+                Deceleration := 100.0,
+                Jerk := 1000.0,
+                BufferMode := MC_BufferMode.MC_Aborting
+            );
+
+            nTestStep := nTestStep + 1;
+        END_IF
+    7:
+         IF fbMotionAxisNCContinuous.MoveContinuousBusy THEN
+            AssertFalse(
+                Condition := fbMotionAxisNCContinuous.MoveContinuousError,
+                Message := 'Move should not show an error.'
+            );
+            AssertEquals_UDINT(
+                Expected := 0,
+                Actual := fbMotionAxisNCContinuous.MoveContinuousErrorID,
+                Message := 'Error ID should be 0.'
+            );
+
+            nTestStep := nTestStep + 1;
+        END_IF
+    8:
+         IF fbMotionAxisNCContinuous.MeasuredPosition <= -5.0 THEN
+            fbMotionAxisNCContinuous.MoveAbsolute(
+                Position := 0.0,
+                Velocity := 12.0,
+                Acceleration := 113.0,
+                Deceleration := 100.0,
+                Jerk := 1540.0,
+                BufferMode := MC_BufferMode.MC_Aborting
+            );
+
+            nTestStep := nTestStep + 1;
+        END_IF
+
+         IF fbMotionAxisNCContinuous.MoveAbsoluteBusy THEN
+            nTestStep := nTestStep + 1;
+        END_IF
+    9:
+         IF fbMotionAxisNCContinuous.MoveAbsoluteDone THEN
+            AssertEquals_LREAL(
+                Expected := 0.0,
+                Actual := fbMotionAxisNCContinuous.MeasuredPosition,
+                Delta := 1e-3,
+                Message := 'Measured position was not the expected value.'
+            );
+            AssertFalse(
+                Condition := fbMotionAxisNCContinuous.MoveAbsoluteError,
+                Message := 'Move should not show an error.'
+            );
+            AssertEquals_UDINT(
+                Expected := 0,
+                Actual := fbMotionAxisNCContinuous.MoveAbsoluteErrorID,
+                Message := 'Error ID should be 0.'
+            );
+
+            nTestStep := nTestStep + 1;
+        END_IF
+    10:
+        fbMotionAxisNCContinuous.Power(
+            Enable := FALSE,
+            Enable_Positive := FALSE,
+            Enable_Negative := FALSE
+        );
+
+        nTestStep := nTestStep + 1;
+END_CASE
+
+IF nTestStep = 11 THEN
+    TEST_FINISHED();
+ELSIF fbTestTimer.Q THEN
+    AssertTrue(
+        Condition := FALSE,
+        Message := CONCAT('Timed out at step: ', TO_STRING(nTestStep))
+    );
+
+    TEST_FINISHED();
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -10,6 +10,10 @@ VAR
         .AxisReference := Axis_MotionAxisNC_Test
     '}
     fbMotionAxisNC_Test : FB_MotionAxisNC_Test;
+    {attribute 'TcNcAxis' := '
+        .AxisReference := Axis_MotionAxisNCContinuous_Test
+    '}
+    fbMotionAxisNCContinuous_Test : FB_MotionAxisNCContinuous_Test;
     fb_MotionBPTM_Test: FB_MotionBPTM_Test;
     fb_MotionClearAsserts_Test: FB_MotionClearAsserts_Test;
     fb_MotionReadPMPSDBND_Test: FB_MotionReadPMPSDBND_Test;

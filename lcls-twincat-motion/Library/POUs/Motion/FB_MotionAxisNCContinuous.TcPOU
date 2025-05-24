@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_MotionAxisNCContinuous" Id="{187ebdd8-9f61-4056-9311-961d18c98129}" SpecialFunc="None">
+    <Declaration><![CDATA[
+FUNCTION_BLOCK FB_MotionAxisNCContinuous EXTENDS FB_MotionAxisNC IMPLEMENTS I_MotionAxisContinuous
+VAR
+    bCommandedMoveVelocity1 : BOOL;
+    bCommandedMoveVelocity2 : BOOL;
+    fbMcMoveVelocity1 : MC_MoveVelocity;
+    fbMcMoveVelocity2 : MC_MoveVelocity;
+    eMotionDirection : MC_Direction := MC_Direction.MC_Undefined_Direction;
+    fTargetPosition : LREAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+SUPER^();
+
+THIS^.fbMcMoveVelocity1(
+    Axis := THIS^.AxisReference,
+    Execute := THIS^.bCommandedMoveVelocity1
+);
+THIS^.bCommandedMoveVelocity1 := FALSE;
+
+THIS^.fbMcMoveVelocity2(
+    Axis := THIS^.AxisReference,
+    Execute := THIS^.bCommandedMoveVelocity2
+);
+THIS^.bCommandedMoveVelocity2 := FALSE;
+]]></ST>
+    </Implementation>
+    <Property Name="MoveBusy" Id="{2bcc10aa-562a-46a6-9949-f9d7eb1fb9ad}">
+      <Declaration><![CDATA[
+PROPERTY MoveBusy : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{4500cf6c-f494-40c1-ac1b-d7f8bd103768}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+MoveBusy := SUPER^.MoveBusy OR THIS^.MoveContinuousBusy;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="MoveContinuous" Id="{35f1fcad-fd76-49a7-a8f2-1be3653a9ef8}">
+      <Declaration><![CDATA[
+METHOD MoveContinuous
+VAR_INPUT
+    Position	: LREAL;
+    Velocity	: LREAL;
+    Acceleration	: LREAL := 0.0;
+    Deceleration	: LREAL := 0.0;
+    Jerk	: LREAL := 0.0;
+    BufferMode	: MC_BufferMode := .MC_BufferMode.MC_Aborting;
+END_VAR
+VAR_OUTPUT
+    InVelocity	: BOOL;
+    Busy	: BOOL;
+    Active	: BOOL;
+    CommandAborted	: BOOL;
+    Error	: BOOL;
+    ErrorID	: UDINT;
+    ErrorStr	: T_MaxString;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF Position > THIS^.MeasuredPosition THEN
+    THIS^.eMotionDirection := MC_Direction.MC_Positive_Direction;
+ELSIF Position < THIS^.MeasuredPosition THEN
+    THIS^.eMotionDirection := MC_Direction.MC_Negative_Direction;
+ELSE
+    RETURN;
+END_IF
+
+THIS^.fTargetPosition := Position;
+
+IF NOT fbMcMoveVelocity1.Busy THEN
+    THIS^.bCommandedMoveVelocity1 := TRUE;
+    THIS^.fbMcMoveVelocity1(
+        Axis := THIS^.AxisReference,
+        Velocity := Velocity,
+        Acceleration := Acceleration,
+        Deceleration := Deceleration,
+        Jerk := Jerk,
+        Direction := THIS^.eMotionDirection,
+        BufferMode := BufferMode,
+        InVelocity => InVelocity,
+        Busy => Busy,
+        Active => Active,
+        CommandAborted => CommandAborted,
+        Error => Error,
+        ErrorID => ErrorID
+    );
+ELSE
+    THIS^.bCommandedMoveVelocity2 := TRUE;
+    THIS^.fbMcMoveVelocity2(
+        Axis := THIS^.AxisReference,
+        Velocity := Velocity,
+        Acceleration := Acceleration,
+        Deceleration := Deceleration,
+        Jerk := Jerk,
+        Direction := THIS^.eMotionDirection,
+        BufferMode := BufferMode,
+        InVelocity => InVelocity,
+        Busy => Busy,
+        Active => Active,
+        CommandAborted => CommandAborted,
+        Error => Error,
+        ErrorID => ErrorID
+    );
+END_IF
+
+ErrorStr := '';
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="MoveContinuousBusy" Id="{ff35cf7a-b586-4820-a6ce-5e8e9fcf229e}">
+      <Declaration><![CDATA[
+PROPERTY MoveContinuousBusy : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{7bfe30a5-384f-41cd-8466-b35b5f8bcadc}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+MoveContinuousBusy := THIS^.fbMcMoveVelocity1.Busy OR THIS^.fbMcMoveVelocity2.Busy;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="MoveContinuousError" Id="{32a170a5-f864-4a49-91d4-e19afb75642b}">
+      <Declaration><![CDATA[
+PROPERTY MoveContinuousError : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{6e0d56e5-2f6d-492b-8896-31811023a8ec}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+MoveContinuousError := THIS^.fbMcMoveVelocity1.Error OR THIS^.fbMcMoveVelocity2.Error;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="MoveContinuousErrorID" Id="{4017b2b7-7f21-4f05-acb5-d677f7f361b7}">
+      <Declaration><![CDATA[
+PROPERTY MoveContinuousErrorID : UDINT
+]]></Declaration>
+      <Get Name="Get" Id="{4c8b017a-510a-40cb-b169-04b44bf8e34d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+IF THIS^.fbMcMoveVelocity1.ErrorID <> 0 THEN
+    MoveContinuousErrorID := THIS^.fbMcMoveVelocity1.ErrorID;
+ELSE
+    MoveContinuousErrorID := THIS^.fbMcMoveVelocity2.ErrorID;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="MoveContinuousInVelocity" Id="{48e55eeb-7b41-4f43-8ea7-c76b5eb61e9a}">
+      <Declaration><![CDATA[
+PROPERTY MoveContinuousInVelocity : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{b2117f51-1710-4c8c-930d-e5e279cca0d1}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+MoveContinuousInVelocity := THIS^.fbMcMoveVelocity1.InVelocity OR THIS^.fbMcMoveVelocity2.InVelocity;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="MoveContinuousPassedTargetPosition" Id="{be229683-3e50-4047-85d1-a06f3a80946a}">
+      <Declaration><![CDATA[PROPERTY MoveContinuousPassedTargetPosition : BOOL]]></Declaration>
+      <Get Name="Get" Id="{cf9d215c-af76-4e24-895a-508db6c536b2}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+CASE THIS^.eMotionDirection OF
+    MC_Direction.MC_Positive_Direction :
+        MoveContinuousPassedTargetPosition := THIS^.fTargetPosition <= THIS^.MeasuredPosition;
+
+    MC_Direction.MC_Negative_Direction :
+        MoveContinuousPassedTargetPosition := THIS^.fTargetPosition >= THIS^.MeasuredPosition;
+
+    MC_Direction.MC_Undefined_Direction :
+        MoveContinuousPassedTargetPosition := THIS^.fTargetPosition = THIS^.MeasuredPosition;;
+END_CASE
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="MoveDone" Id="{705f4da3-3141-4d2f-851d-629838e37fc4}">
+      <Declaration><![CDATA[
+PROPERTY MoveDone : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{3460245c-fa0d-4e7b-8da1-2dd759951592}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+MoveDone := SUPER^.MoveDone AND THIS^.MoveContinuousPassedTargetPosition AND THIS^.MoveContinuousInVelocity;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>
