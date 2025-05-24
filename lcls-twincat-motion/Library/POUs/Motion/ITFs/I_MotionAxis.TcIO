@@ -20,18 +20,12 @@ END_VAR
       <Get Name="Get" Id="{8b5023d6-5da9-40ec-aa8c-74eb2417a8d2}">
         <Declaration><![CDATA[]]></Declaration>
       </Get>
-      <Set Name="Set" Id="{f89058bf-69c4-4be5-ad1f-a70368a9907b}">
-        <Declaration><![CDATA[]]></Declaration>
-      </Set>
     </Property>
-    <Property Name="ErrorCode" Id="{31257e10-34e0-4d20-b970-529353446c30}">
-      <Declaration><![CDATA[PROPERTY ErrorCode : BOOL]]></Declaration>
+    <Property Name="ErrorID" Id="{31257e10-34e0-4d20-b970-529353446c30}">
+      <Declaration><![CDATA[PROPERTY ErrorID : BOOL]]></Declaration>
       <Get Name="Get" Id="{93a197bc-3e9c-4e36-a6ad-541212bdf062}">
         <Declaration><![CDATA[]]></Declaration>
       </Get>
-      <Set Name="Set" Id="{daa674a7-bc73-4cb2-8cfd-db41557f0a99}">
-        <Declaration><![CDATA[]]></Declaration>
-      </Set>
     </Property>
     <Method Name="GearIn" Id="{1c3782da-ef9d-411c-b5a3-049738663ee0}">
       <Declaration><![CDATA[METHOD GearIn
@@ -99,28 +93,34 @@ END_VAR
       </Get>
     </Property>
     <Method Name="Home" Id="{7c947ff6-ed62-4aa8-bef7-e60d6026dfbe}">
-      <Declaration><![CDATA[METHOD Home
+      <Declaration><![CDATA[
+METHOD Home
 VAR_INPUT
+    Position : LREAL := DEFAULT_HOME_POSITION;
+    HomingMode : MC_HomingMode := MC_DefaultHoming;
+END_VAR
+VAR_OUTPUT
+    Done	: BOOL;
+    Busy	: BOOL;
+    Active	: BOOL;
+    CommandAborted	: BOOL;
+    Error	: BOOL;
+    ErrorID	: UDINT;
+    ErrorStr	: T_MaxString;
 END_VAR
 ]]></Declaration>
     </Method>
+    <Property Name="HomeBusy" Id="{bbb39d27-8328-4114-ab51-7ed9e80b3fd2}">
+      <Declaration><![CDATA[PROPERTY HomeBusy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{079822ad-fdd1-4cd0-b6db-60dd2c0a02a5}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
     <Property Name="HomeDone" Id="{7ff11c7c-614b-47cb-baec-d0e1b99b56ef}">
       <Declaration><![CDATA[PROPERTY HomeDone : BOOL]]></Declaration>
       <Get Name="Get" Id="{731f59b1-4ebc-46a2-8ec3-b8482a33696e}">
         <Declaration><![CDATA[]]></Declaration>
       </Get>
-      <Set Name="Set" Id="{58c781f1-7e4f-4859-a77a-c805684b0820}">
-        <Declaration><![CDATA[]]></Declaration>
-      </Set>
-    </Property>
-    <Property Name="HomingBusy" Id="{bbb39d27-8328-4114-ab51-7ed9e80b3fd2}">
-      <Declaration><![CDATA[PROPERTY HomingBusy : BOOL]]></Declaration>
-      <Get Name="Get" Id="{079822ad-fdd1-4cd0-b6db-60dd2c0a02a5}">
-        <Declaration><![CDATA[]]></Declaration>
-      </Get>
-      <Set Name="Set" Id="{a87f83c4-184a-4a75-b660-5b5c82fe0cf5}">
-        <Declaration><![CDATA[]]></Declaration>
-      </Set>
     </Property>
     <Property Name="MeasuredAcceleration" Id="{52832248-a987-408c-851d-c4590c3d20d4}">
       <Declaration><![CDATA[PROPERTY MeasuredAcceleration : LREAL]]></Declaration>
@@ -221,18 +221,12 @@ END_VAR
       <Get Name="Get" Id="{9f6577a2-8f8c-4d56-a2cb-ce0bf84f0591}">
         <Declaration><![CDATA[]]></Declaration>
       </Get>
-      <Set Name="Set" Id="{f3f5a99b-3016-4370-b1c9-304baab523ee}">
-        <Declaration><![CDATA[]]></Declaration>
-      </Set>
     </Property>
     <Property Name="MoveDone" Id="{d9c15ea8-20dc-454a-b299-fdc1fae60116}">
       <Declaration><![CDATA[PROPERTY MoveDone : BOOL]]></Declaration>
       <Get Name="Get" Id="{87a07e6c-4f3b-4c7a-910b-026be169f00f}">
         <Declaration><![CDATA[]]></Declaration>
       </Get>
-      <Set Name="Set" Id="{e7d8401e-252d-4bd7-b1cf-f060629874cd}">
-        <Declaration><![CDATA[]]></Declaration>
-      </Set>
     </Property>
     <Property Name="NegativeMotionIsEnabled" Id="{2290676f-06da-4ecf-94a1-0c49597f33bf}">
       <Declaration><![CDATA[PROPERTY NegativeMotionIsEnabled : BOOL]]></Declaration>
