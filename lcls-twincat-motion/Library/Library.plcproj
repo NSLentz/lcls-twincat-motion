@@ -281,7 +281,7 @@
     <Compile Include="POUs\Motion\FB_MotionVirtualFrame.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Motion\FB_PneumaticAxis.TcPOU">
+    <Compile Include="POUs\Motion\FB_MotionAxisPneumatic.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Motion\Gantry\FB_GantryAutoCoupling.TcPOU">

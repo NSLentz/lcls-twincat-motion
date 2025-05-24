@@ -8,6 +8,7 @@ VAR
 
     bCommandedReset : BOOL;
     fbMcReset : MC_Reset;
+    bMostRecentResetDone : BOOL;
 
     fbMcPower : MC_Power;
 
@@ -43,6 +44,10 @@ THIS^.fbMcReset(
     Execute := THIS^.bCommandedReset
 );
 THIS^.bCommandedReset := FALSE;
+
+IF THIS^.fbMcReset.Done THEN
+    THIS^.bMostRecentResetDone := TRUE;
+END_IF
 
 THIS^.fbMcPower(
     Axis := THIS^.AxisReference
@@ -704,9 +709,14 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
+bMostRecentResetDone := FALSE;
+
+IF NOT ResetBusy THEN
+    bCommandedReset := TRUE;
+END_IF
+
 THIS^.fbMcReset(
     Axis := THIS^.AxisReference,
-    Execute := TRUE,
     Done => Done,
     Busy => Busy,
     Error => Error,
@@ -717,6 +727,58 @@ ErrorStr := '';
 ]]></ST>
       </Implementation>
     </Method>
+    <Property Name="ResetBusy" Id="{2483eb0f-cd72-4e71-af17-0e53aa87faa8}">
+      <Declaration><![CDATA[
+PROPERTY ResetBusy : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{74136afb-5824-4ead-b660-ab776cd949e5}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+ResetBusy := fbMcReset.Busy;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="ResetDone" Id="{7d8fe4ef-bebc-41ad-ab5f-d8228e86dc97}">
+      <Declaration><![CDATA[
+PROPERTY ResetDone : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{99dd92af-06a9-40c0-9b61-ae55954b6d47}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+ResetDone := fbMcReset.Done;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="ResetError" Id="{f26378fe-a781-4736-81af-8e55422df90a}">
+      <Declaration><![CDATA[
+PROPERTY ResetError : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{59278bd6-2d98-4f6b-85b9-4ab95760783b}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+ResetError := fbMcReset.Error;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="ResetErrorID" Id="{b2c9c20f-1158-4dc5-a450-388c6f5be22e}">
+      <Declaration><![CDATA[
+PROPERTY ResetErrorID : UDINT
+]]></Declaration>
+      <Get Name="Get" Id="{0cc9c431-57e0-4475-97c3-74c073ceba1c}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+ResetErrorID := fbMcReset.ErrorID;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
     <Property Name="SetpointAcceleration" Id="{0600d181-611e-4f4a-a8c1-ffc8acf60510}">
       <Declaration><![CDATA[
 PROPERTY SetpointAcceleration : LREAL

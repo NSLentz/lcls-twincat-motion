@@ -983,7 +983,7 @@ External Setpoint Generation:
 		</DataType>
 	</DataTypes>
 	<Project GUID="{E61EF94A-CFE8-4DDF-B7C9-5F7AD2CF9D83}" Name="Library" PrjFilePath="..\..\Library\Library.plcproj" TmcFilePath="..\..\Library\Library.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e">
-		<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{1ED34B3D-EE88-AD54-0520-38328BEE7183}" TmcPath="Library\Library.tmc">
+		<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{81CB2594-8DB9-A04B-D401-0B4B90D82011}" TmcPath="Library\Library.tmc">
 			<Name>Library Instance</Name>
 			<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 			<Vars VarGrpType="8" AreaNo="4">
@@ -1893,6 +1893,10 @@ External Setpoint Generation:
 				</Var>
 				<Var>
 					<Name>PRG_TEST.fb_MotionBacklashCompensation_Test.fbMotionStage.fbDriveVirtual.MasterAxis.PlcToNc</Name>
+					<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+				</Var>
+				<Var>
+					<Name>PRG_TEST.fbMotionAxisNC_Test.AxisReference.PlcToNc</Name>
 					<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 				</Var>
 			</Vars>
@@ -4966,6 +4970,10 @@ External Setpoint Generation:
 					<Name>PRG_TEST.fb_MotionBacklashCompensation_Test.fbMotionStage.fbDriveVirtual.MasterAxis.NcToPlc</Name>
 					<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 				</Var>
+				<Var>
+					<Name>PRG_TEST.fbMotionAxisNC_Test.AxisReference.NcToPlc</Name>
+					<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+				</Var>
 			</Vars>
 			<UnrestoredVarLinks ImportTime="2023-05-15T16:50:33">
 				<OwnerA Name="OutputSrc" Prefix="TIPC^Library^Library Instance" Type="2">
@@ -5008,6 +5016,10 @@ External Setpoint Generation:
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis_BacklashCompensation_Test">
 				<Link VarA="PlcTask Inputs^PRG_TEST.fb_MotionBacklashCompensation_Test.stMotionStage.Axis.NcToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^PRG_TEST.fb_MotionBacklashCompensation_Test.stMotionStage.Axis.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis_MotionAxisNC_Test">
+				<Link VarA="PlcTask Inputs^PRG_TEST.fbMotionAxisNC_Test.AxisReference.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^PRG_TEST.fbMotionAxisNC_Test.AxisReference.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis_MotionVirtualFrameRx_Test">
 				<Link VarA="PlcTask Inputs^PRG_TEST.fbMotionVirtualFrameTest.stMotionStageRx.Axis.NcToPlc" VarB="Outputs^ToPlc"/>

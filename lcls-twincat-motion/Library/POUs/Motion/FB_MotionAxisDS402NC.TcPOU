@@ -558,6 +558,58 @@ END_VAR
         <ST><![CDATA[]]></ST>
       </Implementation>
     </Method>
+    <Property Name="ResetBusy" Id="{be1b8c10-536a-4d07-a050-5eb40d049c38}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+PROPERTY ResetBusy : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{d762dfbd-07c8-441f-9572-3e5810b9d678}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="ResetDone" Id="{266b74b9-6454-49a9-bcee-4686d6db4812}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+PROPERTY ResetDone : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{738e0439-0259-4204-baad-ace965957eb0}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="ResetError" Id="{eb22373c-89be-4693-98d4-06d72abf91b4}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+PROPERTY ResetError : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{2e33da03-29a9-4146-9a82-ea41f861b54d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="ResetErrorID" Id="{0372b36f-39d3-4a83-8fb5-370e18c5affe}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+PROPERTY ResetErrorID : UDINT
+]]></Declaration>
+      <Get Name="Get" Id="{63daf578-d307-4923-9792-d7289e51468b}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
     <Property Name="SetpointAcceleration" Id="{35df09f7-af10-412c-b5b8-cd15f520d684}">
       <Declaration><![CDATA[{warning 'Add property implementation'}
 PROPERTY SetpointAcceleration : LREAL

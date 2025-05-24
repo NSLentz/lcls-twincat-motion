@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="FB_PneumaticAxis" Id="{e0eb4b14-2043-42ba-85e3-bf27d0e557c3}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_PneumaticAxis IMPLEMENTS I_MotionAxis
+  <POU Name="FB_MotionAxisPneumatic" Id="{e0eb4b14-2043-42ba-85e3-bf27d0e557c3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MotionAxisPneumatic IMPLEMENTS I_MotionAxis
 VAR_INPUT
 END_VAR
 VAR_OUTPUT
@@ -544,6 +544,58 @@ END_VAR
         <ST><![CDATA[]]></ST>
       </Implementation>
     </Method>
+    <Property Name="ResetBusy" Id="{4abfb485-b71c-4088-acf3-a707403d6cd9}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+PROPERTY ResetBusy : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{002b845e-33b0-46ad-ac9c-ed770952d844}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="ResetDone" Id="{0ea444ef-71fe-4796-9fed-78de89789c51}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+PROPERTY ResetDone : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{212e521f-17bb-4e2b-8560-b3ed2d069462}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="ResetError" Id="{039f6971-36d9-43e5-b204-81ea37aa238a}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+PROPERTY ResetError : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{abe5b5d8-7b6a-48f7-9882-b79bf7dc053e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="ResetErrorID" Id="{cfa289cf-a113-452f-8f07-77e30bd55157}">
+      <Declaration><![CDATA[{warning 'Add property implementation'}
+PROPERTY ResetErrorID : UDINT
+]]></Declaration>
+      <Get Name="Get" Id="{e8592a05-e3a8-48f3-bd95-07b552d10e53}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
     <Property Name="SetpointAcceleration" Id="{a17023a0-983e-422b-9231-13d8380e6084}">
       <Declaration><![CDATA[{warning 'Add property implementation'}
 PROPERTY SetpointAcceleration : LREAL

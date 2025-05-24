@@ -302,6 +302,30 @@ VAR_OUTPUT
 END_VAR
 ]]></Declaration>
     </Method>
+    <Property Name="ResetBusy" Id="{9488151c-8a15-43c6-92fb-1829aac6be09}">
+      <Declaration><![CDATA[PROPERTY ResetBusy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{47c988f6-9188-461f-8902-e751ac4f0261}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="ResetDone" Id="{ec20d5ab-4e72-4afd-8007-6ca15337e60e}">
+      <Declaration><![CDATA[PROPERTY ResetDone : BOOL]]></Declaration>
+      <Get Name="Get" Id="{8f5e0c35-fb57-477c-8cc1-60332f8eb6cd}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="ResetError" Id="{dd32c139-cf53-434f-a5dd-b7b84e79e310}">
+      <Declaration><![CDATA[PROPERTY ResetError : BOOL]]></Declaration>
+      <Get Name="Get" Id="{2b9a9642-33de-4429-91b8-d157e8dadd35}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="ResetErrorID" Id="{4743e1f0-8520-4d95-a195-cb8dfdd34c1a}">
+      <Declaration><![CDATA[PROPERTY ResetErrorID : UDINT]]></Declaration>
+      <Get Name="Get" Id="{129714b8-991a-4881-b30a-ae4acf5a77a1}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
     <Property Name="SetpointAcceleration" Id="{412ba946-8251-4a06-a7f9-430f8c416b2d}">
       <Declaration><![CDATA[
 PROPERTY SetpointAcceleration : LREAL

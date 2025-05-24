@@ -4,25 +4,11 @@
     <Declaration><![CDATA[
 FUNCTION_BLOCK FB_MotionAxisNC_Test EXTENDS FB_TestSuite
 VAR
-    bInitialized : BOOL;
-
-    // Test 1
-    AxisRef_Test1 : AXIS_REF;
-    fbMotionAxisNC_Test1_Instance : FB_MotionAxisNC(AxisReference := AxisRef_Test1);
+    AxisReference : AXIS_REF;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
-IF NOT bInitialized THEN
-    bInitialized := TRUE;
-
-    fbMotionAxisNC_Test1_Instance.FB_Init(
-        bInitRetains := FALSE,
-        bInCopyCode := FALSE,
-        AxisReference := AxisRef_Test1
-    );
-END_IF
-
 GivenLinkedAxisRefExpectSequenceOfOperationsSuccessful();
 ]]></ST>
     </Implementation>
@@ -31,7 +17,11 @@ GivenLinkedAxisRefExpectSequenceOfOperationsSuccessful();
 METHOD PRIVATE GivenLinkedAxisRefExpectSequenceOfOperationsSuccessful
 VAR_INST
     nTestStep : INT;
-    fbTestTimer : TON := (PT := T#5s);
+    fbTestTimer : TON := (PT := T#10s);
+
+    fbMotionAxisNC : FB_MotionAxisNC(
+        AxisReference := THIS^.AxisReference
+    );
 END_VAR
 ]]></Declaration>
       <Implementation>
@@ -40,57 +30,55 @@ TEST(__POUNAME());
 
 fbTestTimer(IN := TRUE);
 
-fbMotionAxisNC_Test1_Instance();
+fbMotionAxisNC();
 
 CASE nTestStep OF
     0:
-        AssertFalse(
-            Condition := fbMotionAxisNC_Test1_Instance.PowerStatus,
-            Message := 'Power status must be false before the test begins.'
-        );
-        AssertFalse(
-            Condition := fbMotionAxisNC_Test1_Instance.PowerIsEnabled,
-            Message := 'Axis should not be enabled.'
-        );
-        AssertFalse(
-            Condition := fbMotionAxisNC_Test1_Instance.PositiveMotionIsEnabled,
-            Message := 'Axis positive motion should not be enabled.'
-        );
-        AssertFalse(
-            Condition := fbMotionAxisNC_Test1_Instance.NegativeMotionIsEnabled,
-            Message := 'Axis negative motion should not be enabled.'
-        );
-        AssertFalse(
-            Condition := fbMotionAxisNC_Test1_Instance.PowerError,
-            Message := 'Move should not show an error.'
-        );
-        AssertEquals_UDINT(
-            Expected := 0,
-            Actual := fbMotionAxisNC_Test1_Instance.PowerErrorID,
-            Message := 'Error ID should be 0.'
-        );
-
-        AssertFalse(
-            Condition := fbMotionAxisNC_Test1_Instance.MoveAbsoluteBusy,
-            Message := 'Move should not show as busy.'
-        );
-        AssertFalse(
-            Condition := fbMotionAxisNC_Test1_Instance.MoveAbsoluteDone,
-            Message := 'Move should not show as done.'
-        );
-        AssertFalse(
-            Condition := fbMotionAxisNC_Test1_Instance.MoveAbsoluteError,
-            Message := 'Move should not show an error.'
-        );
-        AssertEquals_UDINT(
-            Expected := 0,
-            Actual := fbMotionAxisNC_Test1_Instance.MoveAbsoluteErrorID,
-            Message := 'Error ID should be 0.'
+        fbMotionAxisNC.Reset();
+        fbMotionAxisNC.Power(
+            Enable := FALSE,
+            Enable_Positive := FALSE,
+            Enable_Negative := FALSE
         );
 
         nTestStep := nTestStep + 1;
     1:
-        fbMotionAxisNC_Test1_Instance.Power(
+        IF fbMotionAxisNC.ResetDone AND
+            NOT fbMotionAxisNC.PowerIsEnabled AND
+            NOT fbMotionAxisNC.PositiveMotionIsEnabled AND
+            NOT fbMotionAxisNC.NegativeMotionIsEnabled THEN
+            AssertFalse(
+                Condition := fbMotionAxisNC.PowerError,
+                Message := 'Move should not show an error.'
+            );
+            AssertEquals_UDINT(
+                Expected := 0,
+                Actual := fbMotionAxisNC.PowerErrorID,
+                Message := 'Error ID should be 0.'
+            );
+
+            AssertFalse(
+                Condition := fbMotionAxisNC.MoveAbsoluteBusy,
+                Message := 'Move should not show as busy.'
+            );
+            AssertFalse(
+                Condition := fbMotionAxisNC.MoveAbsoluteDone,
+                Message := 'Move should not show as done.'
+            );
+            AssertFalse(
+                Condition := fbMotionAxisNC.MoveAbsoluteError,
+                Message := 'Move should not show an error.'
+            );
+            AssertEquals_UDINT(
+                Expected := 0,
+                Actual := fbMotionAxisNC.MoveAbsoluteErrorID,
+                Message := 'Error ID should be 0.'
+            );
+
+            nTestStep := nTestStep + 1;
+        END_IF
+    2:
+        fbMotionAxisNC.Power(
             Enable := TRUE,
             Enable_Positive := TRUE,
             Enable_Negative := TRUE,
@@ -98,129 +86,292 @@ CASE nTestStep OF
         );
 
         nTestStep := nTestStep + 1;
-    2:
-        IF fbMotionAxisNC_Test1_Instance.PowerStatus THEN
-            AssertTrue(
-                Condition := fbMotionAxisNC_Test1_Instance.PowerIsEnabled,
-                Message := 'Axis should be enabled.'
-            );
-            AssertTrue(
-                Condition := fbMotionAxisNC_Test1_Instance.PositiveMotionIsEnabled,
-                Message := 'Axis positive motion should be enabled.'
-            );
-            AssertTrue(
-                Condition := fbMotionAxisNC_Test1_Instance.NegativeMotionIsEnabled,
-                Message := 'Axis negative motion should be enabled.'
-            );
+    3:
+        IF fbMotionAxisNC.PowerIsEnabled AND
+            fbMotionAxisNC.PositiveMotionIsEnabled AND
+            fbMotionAxisNC.NegativeMotionIsEnabled THEN
             AssertEquals_LREAL(
                 Expected := 90.0,
-                Actual := fbMotionAxisNC_Test1_Instance.GetPowerOverride(),
+                Actual := fbMotionAxisNC.GetPowerOverride(),
                 Delta := 0.0,
                 Message := 'GetPowerOverride() did not return the expected value.'
             );
             AssertEquals_LREAL(
                 Expected := 90.0,
-                Actual := fbMotionAxisNC_Test1_Instance.PowerOverride,
+                Actual := fbMotionAxisNC.PowerOverride,
                 Delta := 0.0,
                 Message := 'PowerOverride was not the expected value.'
             );
             AssertFalse(
-                Condition := fbMotionAxisNC_Test1_Instance.PowerError,
+                Condition := fbMotionAxisNC.PowerError,
                 Message := 'Move should not show an error.'
             );
             AssertEquals_UDINT(
                 Expected := 0,
-                Actual := fbMotionAxisNC_Test1_Instance.PowerErrorID,
+                Actual := fbMotionAxisNC.PowerErrorID,
                 Message := 'Error ID should be 0.'
             );
 
             nTestStep := nTestStep + 1;
         END_IF
-    3:
-        fbMotionAxisNC_Test1_Instance.MoveAbsolute(
-            Position := 5.0,
-            Velocity := 6.0,
-            Acceleration := 7.0,
-            Deceleration := 8.0,
-            Jerk := 9.0,
+    4:
+        fbMotionAxisNC.MoveAbsolute(
+            Position := 15.0,
+            Velocity := 16.0,
+            Acceleration := 17.0,
+            Deceleration := 18.0,
+            Jerk := 19.0,
             BufferMode := MC_BufferMode.MC_BlendingHigh
         );
 
         nTestStep := nTestStep + 1;
-    4:
-         IF fbMotionAxisNC_Test1_Instance.MoveAbsoluteBusy THEN
+    5:
+         IF fbMotionAxisNC.MoveAbsoluteBusy THEN
             AssertFalse(
-                Condition := fbMotionAxisNC_Test1_Instance.MoveAbsoluteDone,
+                Condition := fbMotionAxisNC.MoveAbsoluteDone,
                 Message := 'Move should not show as done.'
             );
             AssertEquals_LREAL(
-                Expected := 5.0,
-                Actual := fbMotionAxisNC_Test1_Instance.MoveAbsoluteTargetPosition,
+                Expected := 15.0,
+                Actual := fbMotionAxisNC.MoveAbsoluteTargetPosition,
                 Delta := 0.0,
                 Message := 'Position setpoint was not the expected value.'
             );
             AssertEquals_LREAL(
-                Expected := 6.0,
-                Actual := fbMotionAxisNC_Test1_Instance.MoveAbsoluteTargetVelocity,
+                Expected := 16.0,
+                Actual := fbMotionAxisNC.MoveAbsoluteTargetVelocity,
                 Delta := 0.0,
                 Message := 'Velocity setpoint was not the expected value.'
             );
             AssertEquals_LREAL(
-                Expected := 7.0,
-                Actual := fbMotionAxisNC_Test1_Instance.MoveAbsoluteTargetAcceleration,
+                Expected := 17.0,
+                Actual := fbMotionAxisNC.MoveAbsoluteTargetAcceleration,
                 Delta := 0.0,
                 Message := 'Acceleration setpoint was not the expected value.'
             );
             AssertEquals_LREAL(
-                Expected := 9.0,
-                Actual := fbMotionAxisNC_Test1_Instance.MoveAbsoluteTargetJerk,
+                Expected := 18.0,
+                Actual := fbMotionAxisNC.MoveAbsoluteTargetDeceleration,
+                Delta := 0.0,
+                Message := 'Deceleration setpoint was not the expected value.'
+            );
+            AssertEquals_LREAL(
+                Expected := 19.0,
+                Actual := fbMotionAxisNC.MoveAbsoluteTargetJerk,
                 Delta := 0.0,
                 Message := 'Jerk setpoint was not the expected value.'
             );
             AssertFalse(
-                Condition := fbMotionAxisNC_Test1_Instance.MoveAbsoluteError,
+                Condition := fbMotionAxisNC.MoveAbsoluteError,
                 Message := 'Move should not show an error.'
             );
             AssertEquals_UDINT(
                 Expected := 0,
-                Actual := fbMotionAxisNC_Test1_Instance.MoveAbsoluteErrorID,
+                Actual := fbMotionAxisNC.MoveAbsoluteErrorID,
                 Message := 'Error ID should be 0.'
             );
 
             nTestStep := nTestStep + 1;
         END_IF
-    5:
-         IF fbMotionAxisNC_Test1_Instance.MoveAbsoluteDone THEN
+    6:
+         IF fbMotionAxisNC.MoveAbsoluteDone THEN
             AssertFalse(
-                Condition := fbMotionAxisNC_Test1_Instance.MoveAbsoluteBusy,
+                Condition := fbMotionAxisNC.MoveAbsoluteBusy,
                 Message := 'Move should not show as busy.'
             );
             AssertEquals_LREAL(
-                Expected := 5.0,
-                Actual := fbMotionAxisNC_Test1_Instance.MeasuredPosition,
-                Delta := 0.0,
+                Expected := 15.0,
+                Actual := fbMotionAxisNC.MeasuredPosition,
+                Delta := 1e-3,
                 Message := 'Measured position was not the expected value.'
             );
             AssertEquals_LREAL(
                 Expected := 0.0,
-                Actual := fbMotionAxisNC_Test1_Instance.MeasuredVelocity,
-                Delta := 0.0,
+                Actual := fbMotionAxisNC.MeasuredVelocity,
+                Delta := 1.0,
                 Message := 'Measured velocity was not the expected value.'
             );
             AssertEquals_LREAL(
                 Expected := 0.0,
-                Actual := fbMotionAxisNC_Test1_Instance.MeasuredAcceleration,
-                Delta := 0.0,
+                Actual := fbMotionAxisNC.MeasuredAcceleration,
+                Delta := 1.0,
                 Message := 'Measured acceleration was not the expected value.'
             );
             AssertFalse(
-                Condition := fbMotionAxisNC_Test1_Instance.MoveAbsoluteError,
+                Condition := fbMotionAxisNC.MoveAbsoluteError,
                 Message := 'Move should not show an error.'
             );
             AssertEquals_UDINT(
                 Expected := 0,
-                Actual := fbMotionAxisNC_Test1_Instance.MoveAbsoluteErrorID,
+                Actual := fbMotionAxisNC.MoveAbsoluteErrorID,
                 Message := 'Error ID should be 0.'
+            );
+
+            nTestStep := nTestStep + 1;
+        END_IF
+    7:
+        fbMotionAxisNC.MoveAbsolute(
+            Position := 16.0,
+            Velocity := 17.0,
+            Acceleration := 18.0,
+            Deceleration := 19.0,
+            Jerk := 110.0,
+            BufferMode := MC_BufferMode.MC_BlendingHigh
+        );
+
+        nTestStep := nTestStep + 1;
+    8:
+         IF fbMotionAxisNC.MoveAbsoluteBusy THEN
+            AssertFalse(
+                Condition := fbMotionAxisNC.MoveAbsoluteDone,
+                Message := 'Move should not show as done.'
+            );
+            AssertEquals_LREAL(
+                Expected := 16.0,
+                Actual := fbMotionAxisNC.MoveAbsoluteTargetPosition,
+                Delta := 0.0,
+                Message := 'Position setpoint was not the expected value.'
+            );
+            AssertEquals_LREAL(
+                Expected := 17.0,
+                Actual := fbMotionAxisNC.MoveAbsoluteTargetVelocity,
+                Delta := 0.0,
+                Message := 'Velocity setpoint was not the expected value.'
+            );
+            AssertEquals_LREAL(
+                Expected := 18.0,
+                Actual := fbMotionAxisNC.MoveAbsoluteTargetAcceleration,
+                Delta := 0.0,
+                Message := 'Acceleration setpoint was not the expected value.'
+            );
+            AssertEquals_LREAL(
+                Expected := 19.0,
+                Actual := fbMotionAxisNC.MoveAbsoluteTargetDeceleration,
+                Delta := 0.0,
+                Message := 'Deceleration setpoint was not the expected value.'
+            );
+            AssertEquals_LREAL(
+                Expected := 110.0,
+                Actual := fbMotionAxisNC.MoveAbsoluteTargetJerk,
+                Delta := 0.0,
+                Message := 'Jerk setpoint was not the expected value.'
+            );
+            AssertFalse(
+                Condition := fbMotionAxisNC.MoveAbsoluteError,
+                Message := 'Move should not show an error.'
+            );
+            AssertEquals_UDINT(
+                Expected := 0,
+                Actual := fbMotionAxisNC.MoveAbsoluteErrorID,
+                Message := 'Error ID should be 0.'
+            );
+
+            nTestStep := nTestStep + 1;
+        END_IF
+    9:
+         IF fbMotionAxisNC.MoveAbsoluteDone THEN
+            AssertFalse(
+                Condition := fbMotionAxisNC.MoveAbsoluteBusy,
+                Message := 'Move should not show as busy.'
+            );
+            AssertEquals_LREAL(
+                Expected := 16.0,
+                Actual := fbMotionAxisNC.MeasuredPosition,
+                Delta := 1e-3,
+                Message := 'Measured position was not the expected value.'
+            );
+            AssertEquals_LREAL(
+                Expected := 0.0,
+                Actual := fbMotionAxisNC.MeasuredVelocity,
+                Delta := 1.0,
+                Message := 'Measured velocity was not the expected value.'
+            );
+            AssertEquals_LREAL(
+                Expected := 0.0,
+                Actual := fbMotionAxisNC.MeasuredAcceleration,
+                Delta := 1.0,
+                Message := 'Measured acceleration was not the expected value.'
+            );
+            AssertFalse(
+                Condition := fbMotionAxisNC.MoveAbsoluteError,
+                Message := 'Move should not show an error.'
+            );
+            AssertEquals_UDINT(
+                Expected := 0,
+                Actual := fbMotionAxisNC.MoveAbsoluteErrorID,
+                Message := 'Error ID should be 0.'
+            );
+
+            nTestStep := nTestStep + 1;
+        END_IF
+    10:
+        fbMotionAxisNC.MoveAbsolute(
+            Position := 0.0,
+            Velocity := 17.0,
+            Acceleration := 18.0,
+            Deceleration := 19.0,
+            Jerk := 110.0,
+            BufferMode := MC_BufferMode.MC_BlendingHigh
+        );
+
+        nTestStep := nTestStep + 1;
+    11:
+         IF fbMotionAxisNC.MoveAbsoluteDone THEN
+            AssertFalse(
+                Condition := fbMotionAxisNC.MoveAbsoluteBusy,
+                Message := 'Move should not show as busy.'
+            );
+            AssertEquals_LREAL(
+                Expected := 0.0,
+                Actual := fbMotionAxisNC.MeasuredPosition,
+                Delta := 1e-3,
+                Message := 'Measured position was not the expected value.'
+            );
+            AssertEquals_LREAL(
+                Expected := 0.0,
+                Actual := fbMotionAxisNC.MeasuredVelocity,
+                Delta := 1.0,
+                Message := 'Measured velocity was not the expected value.'
+            );
+            AssertEquals_LREAL(
+                Expected := 0.0,
+                Actual := fbMotionAxisNC.MeasuredAcceleration,
+                Delta := 1.0,
+                Message := 'Measured acceleration was not the expected value.'
+            );
+            AssertFalse(
+                Condition := fbMotionAxisNC.MoveAbsoluteError,
+                Message := 'Move should not show an error.'
+            );
+            AssertEquals_UDINT(
+                Expected := 0,
+                Actual := fbMotionAxisNC.MoveAbsoluteErrorID,
+                Message := 'Error ID should be 0.'
+            );
+
+            nTestStep := nTestStep + 1;
+        END_IF
+    12:
+        fbMotionAxisNC.Power(
+            Enable := FALSE,
+            Enable_Positive := FALSE,
+            Enable_Negative := FALSE
+        );
+
+        nTestStep := nTestStep + 1;
+    13:
+        IF NOT fbMotionAxisNC.PowerStatus THEN
+            AssertFalse(
+                Condition := fbMotionAxisNC.PowerIsEnabled,
+                Message := 'Axis should not be enabled.'
+            );
+            AssertFalse(
+                Condition := fbMotionAxisNC.PositiveMotionIsEnabled,
+                Message := 'Axis positive motion should not be enabled.'
+            );
+            AssertFalse(
+                Condition := fbMotionAxisNC.NegativeMotionIsEnabled,
+                Message := 'Axis negative motion should not be enabled.'
             );
 
             nTestStep := nTestStep + 1;
@@ -228,7 +379,7 @@ CASE nTestStep OF
 
 END_CASE
 
-IF nTestStep = 6 THEN
+IF nTestStep = 14 THEN
     TEST_FINISHED();
 ELSIF fbTestTimer.Q THEN
     AssertTrue(
